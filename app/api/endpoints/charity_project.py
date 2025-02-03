@@ -9,7 +9,7 @@ from app.api.validators import (
     check_project_invested_amount)
 from app.core.db import get_async_session
 from app.core.user import current_superuser
-from app.crud.charity_project import charityproject_crud
+from app.crud.charity_project import charity_project_crud
 from app.schemas.charity_project import (
     CharityProjectDB,
     CharityProjectCreate,
@@ -28,7 +28,7 @@ async def create_charity_project(
         project: CharityProjectCreate,
         session: AsyncSession = Depends(get_async_session)):
     await check_name_duplicate(project.name, session)
-    new_room = await charityproject_crud.create(project, session)
+    new_room = await charity_project_crud.create(project, session)
     invest_project = await investing_to_new_project(new_room, session)
     await session.commit()
     await session.refresh(invest_project)
@@ -40,7 +40,7 @@ async def create_charity_project(
             response_model_exclude_none=True)
 async def get_charity_projects(
         session: AsyncSession = Depends(get_async_session)):
-    return await charityproject_crud.get_multi(session)
+    return await charity_project_crud.get_multi(session)
 
 
 @router.patch(
@@ -61,7 +61,7 @@ async def partially_update_charityproject(
         await check_name_duplicate(obj_in.name, session)
     if obj_in.full_amount is not None:
         await check_full_amount(obj_in.full_amount, charityproject_id, session)
-    return await charityproject_crud.update(project, obj_in, session)
+    return await charity_project_crud.update(project, obj_in, session)
 
 
 @router.delete(
@@ -76,7 +76,7 @@ async def remove_charityproject(
     project = await check_charityproject_exists(
         charityproject_id, session
     )
-    project = await charityproject_crud.remove(project, session)
+    project = await charity_project_crud.remove(project, session)
     check_close_project(project)
     check_project_invested_amount(project)
     return project

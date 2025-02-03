@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud.charity_project import charityproject_crud
+from app.crud.charity_project import charity_project_crud
 from app.schemas.charity_project import CharityProjectDB
 from app.schemas.donation import DonationDB
 
@@ -11,7 +11,7 @@ async def investing_new_donation(
         donation: DonationDB,
         session: AsyncSession,
 ):
-    project = await charityproject_crud.get_oldest_open_project(session)
+    project = await charity_project_crud.get_oldest_open_project(session)
     if project is None:
         return donation
 
@@ -19,7 +19,7 @@ async def investing_new_donation(
     invested_amount = 0
 
     while remaining_donation_amount > 0:
-        project = await charityproject_crud.get_oldest_open_project(session)
+        project = await charity_project_crud.get_oldest_open_project(session)
         if project is None:
             break
 
@@ -55,7 +55,7 @@ async def investing_to_new_project(
         return project
 
     while True:
-        donation = await charityproject_crud.get_oldest_open_donation(session)
+        donation = await charity_project_crud.get_oldest_open_donation(session)
         if donation is None:
             break
 

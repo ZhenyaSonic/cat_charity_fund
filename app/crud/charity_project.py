@@ -42,4 +42,4 @@ class CRUDCharityProject(CRUDBase):
         return oldest_open_donation.scalars().first()
 
 
-charityproject_crud = CRUDCharityProject(CharityProject)
+charity_project_crud = CRUDCharityProject(CharityProject)
