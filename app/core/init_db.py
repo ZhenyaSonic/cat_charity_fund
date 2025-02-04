@@ -16,10 +16,12 @@ get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
 async def create_user(
         email: EmailStr, password: str, is_superuser: bool = False
 ):
-    try:
-
+    """
+    Создаёт пользователя с указанными параметрами.
+    Если пользователь уже существует, исключение UserAlreadyExists подавляется.
+    """
+    with contextlib.suppress(UserAlreadyExists):
         async with get_async_session_context() as session:
-
             async with get_user_db_context(session) as user_db:
                 async with get_user_manager_context(user_db) as user_manager:
                     await user_manager.create(
@@ -30,11 +32,11 @@ async def create_user(
                         )
                     )
 
-    except UserAlreadyExists:
-        pass
-
 
 async def create_first_superuser():
+    """
+    Создаёт первого суперпользователя, если email и пароль заданы в настройках.
+    """
     if (settings.first_superuser_email is not None and
             settings.first_superuser_password is not None):
         await create_user(
