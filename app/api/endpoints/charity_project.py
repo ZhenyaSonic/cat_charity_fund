@@ -17,6 +17,7 @@ from app.schemas.charity_project import (
 from app.services.investing import investing_to_new_project
 
 router = APIRouter()
+__all__ = ["router"]
 
 
 @router.post('/',
