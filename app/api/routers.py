@@ -7,7 +7,6 @@ from app.api.endpoints import (
     donation_router)
 
 main_router = APIRouter()
-# main_router.include_router(main_page_router)
 main_router.include_router(user_router)
 main_router.include_router(
     charityproject_router,
