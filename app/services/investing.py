@@ -7,7 +7,7 @@ from app.schemas.charity_project import CharityProjectDB
 from app.schemas.donation import DonationDB
 
 
-async def investing_new_donation(
+async def distribute_new_donation(
         donation: DonationDB,
         session: AsyncSession,
 ):
@@ -56,7 +56,7 @@ async def investing_new_donation(
     return donation
 
 
-async def investing_to_new_project(
+async def allocate_to_new_project(
         project: CharityProjectDB,
         session: AsyncSession,
 ):

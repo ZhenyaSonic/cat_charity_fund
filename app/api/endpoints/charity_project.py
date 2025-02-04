@@ -14,7 +14,7 @@ from app.schemas.charity_project import (
     CharityProjectDB,
     CharityProjectCreate,
     CharityProjectUpdate)
-from app.services.investing import investing_to_new_project
+from app.services.investing import allocate_to_new_project
 
 router = APIRouter()
 __all__ = ["router"]
@@ -31,7 +31,7 @@ async def create_charity_project(
         session: AsyncSession = Depends(get_async_session)):
     await check_name_duplicate(project.name, session)
     new_project = await charity_project_crud.create(project, session)
-    invest_project = await investing_to_new_project(new_project, session)
+    invest_project = await allocate_to_new_project(new_project, session)
     return invest_project
 
 
