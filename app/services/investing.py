@@ -11,6 +11,17 @@ async def investing_new_donation(
         donation: DonationDB,
         session: AsyncSession,
 ):
+    """
+    Распределяет новую пожертвованную сумму (donation) на открытые проекты.
+
+    Логика:
+    - Берется самый старый открытый проект.
+    - Пожертвование распределяется на проект до тех пор,
+    пока не будет полностью использовано
+      или пока не закончатся открытые проекты.
+    - Если проект полностью профинансирован, он закрывается
+    (устанавливается `fully_invested` и `close_date`).
+    """
     project = await charity_project_crud.get_oldest_open_project(session)
     if project is None:
         return donation
@@ -47,7 +58,19 @@ async def investing_new_donation(
 
 async def investing_to_new_project(
         project: CharityProjectDB,
-        session: AsyncSession, ):
+        session: AsyncSession,
+):
+    """
+    Распределяет доступные пожертвования на новый проект.
+
+    Логика:
+    - Берется самое старое открытое пожертвование.
+    - Пожертвование распределяется на проект до тех пор,
+    пока проект не будет полностью профинансирован
+      или пока не закончатся доступные пожертвования.
+    - Если проект полностью профинансирован, он закрывается
+    (устанавливается `fully_invested` и `close_date`).
+    """
     need_donation = project.full_amount
 
     if need_donation <= 0:
