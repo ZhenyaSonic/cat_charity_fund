@@ -34,7 +34,7 @@ class CharityProjectUpdate(CharityProjectBase):
     @validator('name', allow_reuse=True)
     def name_cannot_be_null(cls, value):
         if value is None or value == '':
-            raise ValueError('Имя может быть пустым')
+            raise ValueError('Имя не может быть пустым')
         return value
 
     @validator('description', allow_reuse=True)

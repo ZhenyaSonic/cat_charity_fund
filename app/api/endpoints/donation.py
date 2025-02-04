@@ -13,7 +13,6 @@ from app.schemas.donation import (
 from app.services.investing import distribute_new_donation
 
 router = APIRouter()
-__all__ = ["router"]
 
 
 @router.post(
