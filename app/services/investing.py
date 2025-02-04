@@ -83,6 +83,4 @@ async def investing_to_new_project(
             project.fully_invested = True
             project.close_date = datetime.now()
             break
-
-    await session.commit()
     return project

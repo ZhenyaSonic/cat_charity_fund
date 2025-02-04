@@ -29,11 +29,9 @@ async def create_charity_project(
         project: CharityProjectCreate,
         session: AsyncSession = Depends(get_async_session)):
     await check_name_duplicate(project.name, session)
-    new_room = await charity_project_crud.create(project, session)
-    invest_project = await investing_to_new_project(new_room, session)
-    await session.commit()
-    await session.refresh(invest_project)
-    return new_room
+    new_project = await charity_project_crud.create(project, session)
+    invest_project = await investing_to_new_project(new_project, session)
+    return invest_project
 
 
 @router.get('/',
