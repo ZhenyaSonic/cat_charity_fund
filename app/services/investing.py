@@ -38,6 +38,9 @@ async def invest_funds(
         source.fully_invested = True
         source.close_date = datetime.now()
 
+    session.add(source)
+    await session.commit()
+    await session.refresh(source)
     return source
 
 

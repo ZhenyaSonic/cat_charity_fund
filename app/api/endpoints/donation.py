@@ -24,9 +24,7 @@ async def create_donation(
         session: AsyncSession = Depends(get_async_session),
         user: User = Depends(current_user)):
     new_donation = await donation_crud.create(donation, session, user)
-    invest_donation = await distribute_new_donation(new_donation, session)
-    await session.commit()
-    await session.refresh(invest_donation)
+    await distribute_new_donation(new_donation, session)
     return new_donation
 
 
