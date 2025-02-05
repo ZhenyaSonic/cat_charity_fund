@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Callable, Awaitable
 from app.crud.charity_project import charity_project_crud
 
 
@@ -44,28 +45,40 @@ async def invest_funds(
     return source
 
 
-async def distribute_new_donation(
-    donation,
+async def distribute_funds(
+    source,
+    target_getter: Callable[[AsyncSession], Awaitable],
     session: AsyncSession,
 ):
     """
-    Распределяет новую пожертвованную сумму (donation) на открытые проекты.
+    Универсальная функция для распределения средств.
+    :param source: Источник средств (пожертвование или проект).
+    :param target_getter: Функция для получения цели распределения.
+    :param session: Асинхронная сессия SQLAlchemy.
     """
     return await invest_funds(
+        source=source,
+        target_getter=target_getter,
+        session=session,
+    )
+
+
+async def distribute_new_donation(donation, session: AsyncSession):
+    """
+    Распределяет новую пожертвованную сумму (donation) на открытые проекты.
+    """
+    return await distribute_funds(
         source=donation,
         target_getter=charity_project_crud.get_oldest_open_project,
         session=session,
     )
 
 
-async def allocate_to_new_project(
-    project,
-    session: AsyncSession,
-):
+async def allocate_to_new_project(project, session: AsyncSession):
     """
     Распределяет доступные пожертвования на новый проект.
     """
-    return await invest_funds(
+    return await distribute_funds(
         source=project,
         target_getter=charity_project_crud.get_oldest_open_donation,
         session=session,
