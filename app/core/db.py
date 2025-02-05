@@ -26,10 +26,8 @@ class PreBase:
 
 Base = declarative_base(cls=PreBase)
 
-# Создание асинхронного движка для работы с базой данных
 engine = create_async_engine(settings.database_url)
 
-# Создание фабрики для асинхронных сессий
 AsyncSessionLocal: sessionmaker = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )
@@ -38,9 +36,6 @@ AsyncSessionLocal: sessionmaker = sessionmaker(
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Генератор для получения асинхронной сессии SQLAlchemy.
-
-    Yields:
-        AsyncSession: Асинхронная сессия для работы с базой данных.
     """
     async with AsyncSessionLocal() as async_session:
         yield async_session
