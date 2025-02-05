@@ -4,8 +4,6 @@ from sqlalchemy import Column, Integer, Boolean, DateTime, CheckConstraint
 
 from app.core.db import Base
 
-__all__ = ["BaseModel"]
-
 
 class BaseModel(Base):
     """

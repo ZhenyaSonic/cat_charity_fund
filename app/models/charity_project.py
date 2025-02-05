@@ -2,8 +2,6 @@ from sqlalchemy import Column, String, Text
 
 from app.models.base import BaseModel
 
-__all__ = ["CharityProject"]
-
 
 class CharityProject(BaseModel):
     """
