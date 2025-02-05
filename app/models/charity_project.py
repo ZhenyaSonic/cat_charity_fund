@@ -7,15 +7,12 @@ __all__ = ["CharityProject"]
 
 class CharityProject(BaseModel):
     """
-    Модель для благотворительных проектов:
+    Для благотворительных проектов:
     - name: Название проекта (уникальное).
     - description: Описание проекта.
     """
     name = Column(String(100), unique=True, nullable=False)
     description = Column(Text, nullable=False)
-
-    def __repr__(self):
-        return f"<CharityProject(id={self.id}, name={self.name})>"
 
     def __str__(self):
         return f"CharityProject (ID: {self.id}, Name: {self.name})"

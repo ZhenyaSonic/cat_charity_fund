@@ -9,7 +9,7 @@ __all__ = ["BaseModel"]
 
 class BaseModel(Base):
     """
-    Базовая модель для всех таблиц, содержащая общие поля:
+    Для всех таблиц, содержащая общие поля:
     - full_amount: Полная сумма (должна быть больше 0).
     - invested_amount: Инвестированная сумма
     (не может быть отрицательной и не превышает full_amount).
@@ -17,6 +17,7 @@ class BaseModel(Base):
     - create_date: Дата создания.
     - close_date: Дата закрытия.
     """
+
     __abstract__ = True
 
     full_amount = Column(Integer, nullable=False)
@@ -33,14 +34,6 @@ class BaseModel(Base):
         CheckConstraint('invested_amount <= full_amount',
                         name='check_invested_amount_not_exceed_full'),
     )
-
-    def __repr__(self):
-        return (
-            f"""<{self.__class__.__name__}(id={self.id},
-            full_amount={self.full_amount}, """
-            f"""invested_amount={self.invested_amount},
-            fully_invested={self.fully_invested})>"""
-        )
 
     def __str__(self):
         return f"""{self.__class__.__name__} (ID: {self.id},
