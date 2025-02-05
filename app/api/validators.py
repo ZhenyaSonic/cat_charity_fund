@@ -10,7 +10,7 @@ async def check_name_duplicate(
         session: AsyncSession,
 ) -> None:
     """
-    Проверяет, существует ли проект с таким же именем в базе данных.
+    Убедитесь, что проект с таким именем отсутствует в базе данных.
     """
     project_id = await charity_project_crud.get_project_by_name(
         project_name,
@@ -25,7 +25,7 @@ async def check_name_duplicate(
 async def check_charityproject_exists(
         charityproject_id: int, session: AsyncSession, ) -> CharityProject:
     """
-    Проверяет, существует ли проект с указанным ID.
+    Убедитесь, что проект с указанным ID существует.
     """
     charityproject = await charity_project_crud.get(charityproject_id, session)
     if charityproject is None:
@@ -42,7 +42,7 @@ async def check_full_amount(
         session: AsyncSession,
 ) -> None:
     """
-    Проверяет, что новая сумма не меньше уже вложенной суммы.
+    Убедитесь, что новая сумма не меньше уже вложенной.
     """
     charityproject = await charity_project_crud.get(charityproject_id, session)
     if full_amount < charityproject.invested_amount:
@@ -54,7 +54,7 @@ async def check_full_amount(
 
 def check_close_project(project):
     """
-    Проверяет, закрыт ли проект.
+    Убедитесь, что проект не закрыт.
     Закрытые проекты нельзя редактировать или удалять.
     """
     if project.fully_invested is True:
@@ -66,21 +66,21 @@ def check_close_project(project):
 
 def check_project_invested_amount(project):
     """
-    Проверяет, были ли внесены средства в проект.
+    Убедитесь, что в проект не были внесены средства.
     Проекты с вложениями нельзя удалять.
     """
     if project.invested_amount > 0:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
-            detail='Нельзя удалять проект в который внесены средства!'
+            detail='Нельзя удалять проект, в который внесены средства!'
         )
 
 
 def check_project_before_edit(project):
     """
-    Проверяет, можно ли редактировать проект.
-    Запрещает изменение суммы инвестиций,
-    даты создания, даты закрытия и статуса инвестирования.
+    Убедитесь, что параметры проекта можно редактировать.
+    Запрещено изменять сумму инвестиций, дату создания,
+    дату закрытия и статус инвестирования.
     """
     if project.invested_amount is not None:
         raise HTTPException(
@@ -100,5 +100,5 @@ def check_project_before_edit(project):
     if project.fully_invested is not None:
         raise HTTPException(
             status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
-            detail='Нельзя изменять сумму инвестирования!'
+            detail='Нельзя изменять статус инвестирования!'
         )
