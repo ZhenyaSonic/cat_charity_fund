@@ -1,7 +1,8 @@
-from typing import Optional
+from typing import Type, Optional
 
 from sqlalchemy import select, asc
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import DeclarativeMeta
 
 from app.crud.base import CRUDBase
 from app.models import CharityProject, Donation
@@ -21,25 +22,31 @@ class CRUDCharityProject(CRUDBase):
         )
         return db_project_id.scalars().first()
 
+    async def get_oldest_open_item(
+            self,
+            session: AsyncSession,
+            model: Type[DeclarativeMeta]
+    ) -> Optional[DeclarativeMeta]:
+        """
+        Универсальная функция для получения самой старой открытой записи
+        из указанной модели.
+        """
+        oldest_open_item = await session.execute(
+            select(model).filter(
+                model.fully_invested.is_(False)
+            ).order_by(asc(model.create_date)).limit(1)
+        )
+        return oldest_open_item.scalars().first()
+
     async def get_oldest_open_project(
-            self, session: AsyncSession,
+            self, session: AsyncSession
     ) -> Optional[CharityProject]:
-        oldest_open_project = await session.execute(
-            select(CharityProject).filter(
-                CharityProject.fully_invested.is_(False))
-            .order_by(asc(CharityProject.create_date))
-            .limit(1))
-        return oldest_open_project.scalars().first()
+        return await self.get_oldest_open_item(session, CharityProject)
 
     async def get_oldest_open_donation(
-            self, session: AsyncSession,
+            self, session: AsyncSession
     ) -> Optional[Donation]:
-        oldest_open_donation = await session.execute(
-            select(Donation).filter(
-                Donation.fully_invested.is_(False))
-            .order_by(asc(Donation.create_date))
-            .limit(1))
-        return oldest_open_donation.scalars().first()
+        return await self.get_oldest_open_item(session, Donation)
 
 
 charity_project_crud = CRUDCharityProject(CharityProject)
