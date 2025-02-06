@@ -2,10 +2,10 @@ from typing import Type, Optional
 
 from sqlalchemy import select, asc
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import DeclarativeMeta
 
 from app.crud.base import CRUDBase
-from app.models import CharityProject, Donation
+from app.models import CharityProject
+from app.models.base import BaseModel
 
 
 class CRUDCharityProject(CRUDBase):
@@ -25,8 +25,8 @@ class CRUDCharityProject(CRUDBase):
     async def get_oldest_open_item(
             self,
             session: AsyncSession,
-            model: Type[DeclarativeMeta]
-    ) -> Optional[DeclarativeMeta]:
+            model: Type[BaseModel]
+    ) -> Optional[BaseModel]:
         """
         Универсальная функция для получения самой старой открытой записи
         из указанной модели.
@@ -37,16 +37,6 @@ class CRUDCharityProject(CRUDBase):
             ).order_by(asc(model.create_date)).limit(1)
         )
         return oldest_open_item.scalars().first()
-
-    async def get_oldest_open_project(
-            self, session: AsyncSession
-    ) -> Optional[CharityProject]:
-        return await self.get_oldest_open_item(session, CharityProject)
-
-    async def get_oldest_open_donation(
-            self, session: AsyncSession
-    ) -> Optional[Donation]:
-        return await self.get_oldest_open_item(session, Donation)
 
 
 charity_project_crud = CRUDCharityProject(CharityProject)

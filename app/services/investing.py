@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Callable, Awaitable
 from app.crud.charity_project import charity_project_crud
+from app.models import CharityProject, Donation
 
 
 async def invest_funds(
@@ -69,7 +70,9 @@ async def distribute_new_donation(donation, session: AsyncSession):
     """
     return await distribute_funds(
         source=donation,
-        target_getter=charity_project_crud.get_oldest_open_project,
+        target_getter=(lambda session:
+                       charity_project_crud
+                       .get_oldest_open_item(session, CharityProject)),
         session=session,
     )
 
@@ -80,6 +83,8 @@ async def allocate_to_new_project(project, session: AsyncSession):
     """
     return await distribute_funds(
         source=project,
-        target_getter=charity_project_crud.get_oldest_open_donation,
+        target_getter=(lambda session:
+                       charity_project_crud
+                       .get_oldest_open_item(session, Donation)),
         session=session,
     )
