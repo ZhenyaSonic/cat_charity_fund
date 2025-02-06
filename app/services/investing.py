@@ -1,13 +1,12 @@
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Callable, Awaitable
+from typing import Callable, Awaitable, Type
 from app.crud.charity_project import charity_project_crud
-from app.models import CharityProject, Donation
 
 
 async def invest_funds(
     source,
-    target_getter,
+    target_getter: Callable[[AsyncSession], Awaitable],
     session: AsyncSession,
 ):
     """
@@ -35,6 +34,8 @@ async def invest_funds(
             invested_amount += remaining_funds
             remaining_funds = 0
 
+        session.add(target)
+
     source.invested_amount += invested_amount
     if remaining_funds == 0:
         source.fully_invested = True
@@ -46,45 +47,24 @@ async def invest_funds(
     return source
 
 
-async def distribute_funds(
+async def distribute_resources(
     source,
-    target_getter: Callable[[AsyncSession], Awaitable],
+    target_model: Type,
     session: AsyncSession,
 ):
     """
     Универсальная функция для распределения средств.
     :param source: Источник средств (пожертвование или проект).
-    :param target_getter: Функция для получения цели распределения.
+    :param target_model: Модель цели распределения
+    (CharityProject или Donation).
     :param session: Асинхронная сессия SQLAlchemy.
     """
+    target_getter = (
+        lambda session:
+        charity_project_crud
+        .get_oldest_open_item(session, target_model))
     return await invest_funds(
         source=source,
         target_getter=target_getter,
-        session=session,
-    )
-
-
-async def distribute_new_donation(donation, session: AsyncSession):
-    """
-    Распределяет новую пожертвованную сумму (donation) на открытые проекты.
-    """
-    return await distribute_funds(
-        source=donation,
-        target_getter=(lambda session:
-                       charity_project_crud
-                       .get_oldest_open_item(session, CharityProject)),
-        session=session,
-    )
-
-
-async def allocate_to_new_project(project, session: AsyncSession):
-    """
-    Распределяет доступные пожертвования на новый проект.
-    """
-    return await distribute_funds(
-        source=project,
-        target_getter=(lambda session:
-                       charity_project_crud
-                       .get_oldest_open_item(session, Donation)),
         session=session,
     )
