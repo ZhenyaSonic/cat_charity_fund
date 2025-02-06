@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import Awaitable, Callable, Type
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Callable, Awaitable, Type
+
 from app.crud.charity_project import charity_project_crud
 
 
