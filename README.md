@@ -50,4 +50,4 @@
 ```uvicorn app.main:app --reload ```
 
 Автор
-Екатерина https://github.com/ZhenyaSonic
+Евгений https://github.com/ZhenyaSonic
